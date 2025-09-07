@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-// 在 App.js 頂部添加這些簡單組件
+import React, { useState } from 'react';
+import { AlertCircle, TrendingUp, DollarSign, Target, BarChart3, User, Lock, Star } from 'lucide-react';
+
+// 簡單版UI組件替換
 const Card = ({ children, className = "" }) => (
-  <div className={`bg-gray-800/50 border border-gray-600 rounded-lg ${className}`}>
+  <div className={`bg-gray-800/50 border border-gray-600 rounded-lg backdrop-blur-sm ${className}`}>
     {children}
   </div>
 );
 
-const CardHeader = ({ children }) => (
-  <div className="p-6 pb-0">{children}</div>
+const CardHeader = ({ children, className = "" }) => (
+  <div className={`p-6 pb-0 ${className}`}>{children}</div>
 );
 
 const CardTitle = ({ children, className = "" }) => (
@@ -18,15 +20,18 @@ const CardContent = ({ children, className = "" }) => (
   <div className={`p-6 ${className}`}>{children}</div>
 );
 
-const Button = ({ children, onClick, className = "", disabled = false, variant = "" }) => {
-  const baseClass = "px-4 py-2 rounded-md font-medium transition-colors";
-  const variantClass = variant === "outline" ? "border border-gray-500 bg-transparent" : "bg-purple-600 hover:bg-purple-700";
+const Button = ({ children, onClick, className = "", disabled = false, variant = "", size = "" }) => {
+  const baseClass = "font-medium transition-colors rounded-md";
+  const sizeClass = size === "sm" ? "px-3 py-1 text-sm" : "px-4 py-2";
+  const variantClass = variant === "outline" 
+    ? "border border-gray-500 bg-transparent text-gray-300 hover:bg-gray-700" 
+    : "bg-purple-600 hover:bg-purple-700 text-white";
   
   return (
     <button 
       onClick={onClick}
       disabled={disabled}
-      className={`${baseClass} ${variantClass} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`${baseClass} ${sizeClass} ${variantClass} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       {children}
     </button>
@@ -41,10 +46,9 @@ const Input = ({ type = "text", value, onChange, placeholder, className = "", mi
     placeholder={placeholder}
     min={min}
     max={max}
-    className={`w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${className}`}
+    className={`w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 ${className}`}
   />
 );
-import { AlertCircle, TrendingUp, DollarSign, Target, BarChart3, User, Lock, Star } from 'lucide-react';
 
 const BaccaratPredictor = () => {
   // 登錄狀態
@@ -328,7 +332,7 @@ const BaccaratPredictor = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 p-6">
         <div className="max-w-md mx-auto mt-20">
-          <Card className="bg-gray-800/50 border-purple-500/30 backdrop-blur-sm">
+          <Card className="bg-gray-800/50 border-purple-500/30">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-white flex items-center justify-center gap-2">
                 <BarChart3 className="w-8 h-8 text-purple-400" />
@@ -346,7 +350,6 @@ const BaccaratPredictor = () => {
                   type="text"
                   value={loginForm.userId}
                   onChange={(e) => setLoginForm(prev => ({ ...prev, userId: e.target.value }))}
-                  className="bg-gray-700/50 border-purple-500/30 text-white"
                   placeholder="請輸入用戶ID"
                 />
               </div>
@@ -359,7 +362,6 @@ const BaccaratPredictor = () => {
                   type="password"
                   value={loginForm.password}
                   onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                  className="bg-gray-700/50 border-purple-500/30 text-white"
                   placeholder="請輸入專屬編碼"
                 />
               </div>
@@ -382,7 +384,7 @@ const BaccaratPredictor = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 p-6">
         <div className="max-w-md mx-auto mt-10">
           {/* 用戶信息欄 */}
-          <Card className="bg-gray-800/50 border-green-500/30 backdrop-blur-sm mb-6">
+          <Card className="bg-gray-800/50 border-green-500/30 mb-6">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -412,7 +414,7 @@ const BaccaratPredictor = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-purple-500/30 backdrop-blur-sm">
+          <Card className="bg-gray-800/50 border-purple-500/30">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-white">
                 設置投注資金
@@ -427,7 +429,6 @@ const BaccaratPredictor = () => {
                   type="number"
                   value={startAmount}
                   onChange={(e) => setStartAmount(e.target.value)}
-                  className="bg-gray-700/50 border-purple-500/30 text-white"
                   placeholder="請輸入起始資金"
                 />
               </div>
@@ -439,7 +440,6 @@ const BaccaratPredictor = () => {
                   type="number"
                   value={targetAmount}
                   onChange={(e) => setTargetAmount(e.target.value)}
-                  className="bg-gray-700/50 border-purple-500/30 text-white"
                   placeholder="請輸入目標資金"
                 />
               </div>
@@ -463,7 +463,7 @@ const BaccaratPredictor = () => {
       <div className="max-w-6xl mx-auto space-y-6">
         
         {/* 用戶狀態欄 */}
-        <Card className="bg-gray-800/50 border-purple-500/30 backdrop-blur-sm">
+        <Card className="bg-gray-800/50 border-purple-500/30">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -494,7 +494,7 @@ const BaccaratPredictor = () => {
 
         {/* 資金狀態 */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-gray-800/50 border-green-500/30 backdrop-blur-sm">
+          <Card className="bg-gray-800/50 border-green-500/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -508,7 +508,7 @@ const BaccaratPredictor = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-blue-500/30 backdrop-blur-sm">
+          <Card className="bg-gray-800/50 border-blue-500/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -522,7 +522,7 @@ const BaccaratPredictor = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-purple-500/30 backdrop-blur-sm">
+          <Card className="bg-gray-800/50 border-purple-500/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -534,7 +534,7 @@ const BaccaratPredictor = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-yellow-500/30 backdrop-blur-sm">
+          <Card className="bg-gray-800/50 border-yellow-500/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -550,7 +550,7 @@ const BaccaratPredictor = () => {
         </div>
 
         {/* 積分消耗提示 */}
-        <Card className="bg-yellow-500/20 border-yellow-500/30 backdrop-blur-sm">
+        <Card className="bg-yellow-500/20 border-yellow-500/30">
           <CardContent className="p-4">
             <div className="flex items-center justify-center gap-2 text-yellow-300">
               <AlertCircle className="w-5 h-5" />
@@ -560,7 +560,7 @@ const BaccaratPredictor = () => {
         </Card>
 
         {/* 輸入區域 */}
-        <Card className="bg-gray-800/50 border-purple-500/30 backdrop-blur-sm">
+        <Card className="bg-gray-800/50 border-purple-500/30">
           <CardHeader>
             <CardTitle className="text-white">牌局輸入</CardTitle>
           </CardHeader>
@@ -581,7 +581,7 @@ const BaccaratPredictor = () => {
                         newCards[index] = e.target.value;
                         setCurrentGame(prev => ({...prev, playerCards: newCards}));
                       }}
-                      className="bg-gray-700/50 border-purple-500/30 text-white text-center"
+                      className="text-center"
                       placeholder={`牌${index + 1}`}
                     />
                   ))}
@@ -592,7 +592,6 @@ const BaccaratPredictor = () => {
                   max="9"
                   value={currentGame.playerPoints}
                   onChange={(e) => setCurrentGame(prev => ({...prev, playerPoints: e.target.value}))}
-                  className="bg-gray-700/50 border-purple-500/30 text-white"
                   placeholder="閒家點數 (0-9)"
                 />
               </div>
@@ -612,7 +611,7 @@ const BaccaratPredictor = () => {
                         newCards[index] = e.target.value;
                         setCurrentGame(prev => ({...prev, bankerCards: newCards}));
                       }}
-                      className="bg-gray-700/50 border-orange-500/30 text-white text-center"
+                      className="text-center"
                       placeholder={`牌${index + 1}`}
                     />
                   ))}
@@ -623,7 +622,6 @@ const BaccaratPredictor = () => {
                   max="9"
                   value={currentGame.bankerPoints}
                   onChange={(e) => setCurrentGame(prev => ({...prev, bankerPoints: e.target.value}))}
-                  className="bg-gray-700/50 border-orange-500/30 text-white"
                   placeholder="莊家點數 (0-9)"
                 />
               </div>
@@ -633,22 +631,19 @@ const BaccaratPredictor = () => {
               <Button
                 onClick={analyzePrediction}
                 disabled={currentUser.points < 5}
-                className="bg-purple-600 hover:bg-purple-700 px-8 py-3 text-lg disabled:bg-gray-600 disabled:cursor-not-allowed"
+                className="bg-purple-600 hover:bg-purple-700 px-8 py-3 text-lg"
               >
                 {currentUser.points < 5 ? '積分不足' : '分析預測 (-5 XP)'}
               </Button>
               <Button
                 onClick={() => {
-                  // 清除當前遊戲輸入
                   setCurrentGame({
                     playerCards: ['', '', ''],
                     bankerCards: ['', '', ''],
                     playerPoints: '',
                     bankerPoints: ''
                   });
-                  // 清除預測結果
                   setPrediction(null);
-                  // 清除歷史記錄
                   setGameHistory([]);
                   setWinRate(0);
                   setTotalGames(0);
@@ -665,7 +660,7 @@ const BaccaratPredictor = () => {
 
         {/* 預測結果 */}
         {prediction && (
-          <Card className="bg-gray-800/50 border-green-500/30 backdrop-blur-sm">
+          <Card className="bg-gray-800/50 border-green-500/30">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <AlertCircle className="w-6 h-6 text-green-400" />
@@ -756,7 +751,7 @@ const BaccaratPredictor = () => {
 
         {/* 歷史記錄 */}
         {gameHistory.length > 0 && (
-          <Card className="bg-gray-800/50 border-blue-500/30 backdrop-blur-sm">
+          <Card className="bg-gray-800/50 border-blue-500/30">
             <CardHeader>
               <CardTitle className="text-white">遊戲記錄</CardTitle>
             </CardHeader>
