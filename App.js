@@ -1,42 +1,33 @@
 import React, { useState } from 'react';
-import { AlertCircle, TrendingUp, DollarSign, Target, BarChart3, User, Lock, Star } from 'lucide-react';
 
-// 簡單版UI組件替換
+// 簡化版UI組件
 const Card = ({ children, className = "" }) => (
-  <div className={`bg-gray-800/50 border border-gray-600 rounded-lg backdrop-blur-sm ${className}`}>
+  <div className={`bg-gray-800 border border-gray-600 rounded-lg ${className}`} style={{backgroundColor: 'rgba(31, 41, 55, 0.8)', borderColor: 'rgba(75, 85, 99, 0.3)'}}>
     {children}
   </div>
 );
 
-const CardHeader = ({ children, className = "" }) => (
-  <div className={`p-6 pb-0 ${className}`}>{children}</div>
+const CardHeader = ({ children }) => (
+  <div className="p-6 pb-0">{children}</div>
 );
 
 const CardTitle = ({ children, className = "" }) => (
-  <h3 className={`text-xl font-semibold ${className}`}>{children}</h3>
+  <h3 className={`text-xl font-semibold text-white ${className}`}>{children}</h3>
 );
 
-const CardContent = ({ children, className = "" }) => (
-  <div className={`p-6 ${className}`}>{children}</div>
+const CardContent = ({ children }) => (
+  <div className="p-6">{children}</div>
 );
 
-const Button = ({ children, onClick, className = "", disabled = false, variant = "", size = "" }) => {
-  const baseClass = "font-medium transition-colors rounded-md";
-  const sizeClass = size === "sm" ? "px-3 py-1 text-sm" : "px-4 py-2";
-  const variantClass = variant === "outline" 
-    ? "border border-gray-500 bg-transparent text-gray-300 hover:bg-gray-700" 
-    : "bg-purple-600 hover:bg-purple-700 text-white";
-  
-  return (
-    <button 
-      onClick={onClick}
-      disabled={disabled}
-      className={`${baseClass} ${sizeClass} ${variantClass} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-    >
-      {children}
-    </button>
-  );
-};
+const Button = ({ children, onClick, className = "", disabled = false }) => (
+  <button 
+    onClick={onClick}
+    disabled={disabled}
+    className={`px-4 py-2 rounded-md font-medium transition-colors bg-purple-600 hover:bg-purple-700 text-white ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+  >
+    {children}
+  </button>
+);
 
 const Input = ({ type = "text", value, onChange, placeholder, className = "", min, max }) => (
   <input
@@ -46,17 +37,15 @@ const Input = ({ type = "text", value, onChange, placeholder, className = "", mi
     placeholder={placeholder}
     min={min}
     max={max}
-    className={`w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 ${className}`}
+    className={`w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${className}`}
+    style={{backgroundColor: '#374151', borderColor: '#4B5563'}}
   />
 );
 
-const BaccaratPredictor = () => {
-  // 登錄狀態
+function BaccaratPredictor() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginForm, setLoginForm] = useState({ userId: '', password: '' });
   const [currentUser, setCurrentUser] = useState(null);
-  
-  // 原有狀態
   const [startAmount, setStartAmount] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [currentAmount, setCurrentAmount] = useState(0);
@@ -71,45 +60,38 @@ const BaccaratPredictor = () => {
   const [prediction, setPrediction] = useState(null);
   const [winRate, setWinRate] = useState(0);
   const [totalGames, setTotalGames] = useState(0);
-  const [trendData, setTrendData] = useState([]);
 
-  // RC值對照表
+  // 數據對照表
   const RC_VALUES = {
     1: 5, 2: 5, 3: -3, 4: -3, 5: -3, 6: -3, 7: -1, 8: -1, 9: -1,
     10: 0, 11: 0, 12: 0, 13: 0
   };
 
-  // PW值對照表
   const PW_VALUES = {
     0: 0.1, 1: 0.9, 2: 0.5, 3: 0.5, 4: 0.6, 5: 0.7,
     6: 0.3, 7: 0.6, 8: 0.2, 9: 0.1
   };
 
-  // DP值對照表
   const DP_VALUES = {
     1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 2, 7: 2, 8: 2, 9: 2,
     10: 3, 11: 3, 12: 3, 13: 3
   };
 
-  // 莊家PV值對照表
   const BANKER_PV_VALUES = {
     0: 1.5, 1: 1.5, 2: 1.5, 3: 1.5, 4: 1.5, 5: 1.5,
     6: 1.5, 7: 1.7, 8: 1.7, 9: 1.7
   };
 
-  // 閒家PV值對照表
   const PLAYER_PV_VALUES = {
     0: 1.4, 1: 1.4, 2: 1.2, 3: 1.2, 4: 1.4, 5: 1.2,
     6: 1.2, 7: 1.6, 8: 1.6, 9: 1.6
   };
 
-  // 模擬用戶數據庫
   const mockUsers = {
     'user123': { password: 'ABC123', points: 1500, name: 'TestUser' },
     'user456': { password: 'DEF456', points: 3000, name: 'VIPUser' }
   };
 
-  // 登錄處理
   const handleLogin = () => {
     const user = mockUsers[loginForm.userId];
     if (user && user.password === loginForm.password) {
@@ -123,7 +105,6 @@ const BaccaratPredictor = () => {
     }
   };
 
-  // 登出處理
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
@@ -132,7 +113,6 @@ const BaccaratPredictor = () => {
     resetSystem();
   };
 
-  // 扣除積分
   const deductPoints = () => {
     if (currentUser.points >= 5) {
       setCurrentUser(prev => ({
@@ -152,7 +132,7 @@ const BaccaratPredictor = () => {
     const playerEA = TC * (PW_VALUES[parseInt(playerPoints)] || 0);
     const bankerEA = TC * (PW_VALUES[parseInt(bankerPoints)] || 0);
 
-    return { playerEA, bankerEA, TC };
+    return { playerEA, bankerEA };
   };
 
   const calculateVP = (playerCards, bankerCards, playerPoints, bankerPoints) => {
@@ -166,7 +146,6 @@ const BaccaratPredictor = () => {
   };
 
   const analyzePrediction = () => {
-    // 檢查積分
     if (currentUser.points < 5) {
       alert('積分不足！每次預測需要消耗5XP，請聯繫管理員充值。');
       return;
@@ -187,7 +166,6 @@ const BaccaratPredictor = () => {
       return;
     }
 
-    // 扣除積分
     if (!deductPoints()) {
       alert('積分扣除失敗，請重試');
       return;
@@ -283,14 +261,12 @@ const BaccaratPredictor = () => {
     setTotalGames(prev => prev + 1);
     
     if (actualResult !== 'OBSERVE') {
-      setWinRate(prev => {
+      setWinRate(() => {
         const total = totalGames + 1;
         const wins = gameHistory.filter(g => g.isCorrect).length + (isCorrect ? 1 : 0);
         return Math.round((wins / total) * 100);
       });
     }
-
-    setTrendData(prev => [...prev, { amount: newAmount, timestamp: new Date().toLocaleTimeString() }]);
 
     setCurrentGame({
       playerCards: ['', '', ''],
@@ -315,7 +291,6 @@ const BaccaratPredictor = () => {
     setStartAmount('');
     setTargetAmount('');
     setCurrentAmount(0);
-    setTrendData([]);
   };
 
   const handleSetup = () => {
@@ -327,24 +302,21 @@ const BaccaratPredictor = () => {
     setIsSetup(true);
   };
 
-  // 登錄界面
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 p-6">
-        <div className="max-w-md mx-auto mt-20">
-          <Card className="bg-gray-800/50 border-purple-500/30">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-white flex items-center justify-center gap-2">
-                <BarChart3 className="w-8 h-8 text-purple-400" />
-                Probability Analyzer
+      <div style={{minHeight: '100vh', background: 'linear-gradient(135deg, #1f2937, #7c3aed, #8b5cf6)', padding: '24px'}}>
+        <div style={{maxWidth: '400px', margin: '80px auto'}}>
+          <Card>
+            <CardHeader>
+              <CardTitle style={{textAlign: 'center', fontSize: '28px', marginBottom: '8px'}}>
+                百家樂預測器
               </CardTitle>
-              <p className="text-gray-300 text-sm mt-2">AI Agent分析預測</p>
+              <p style={{color: '#d1d5db', textAlign: 'center'}}>AI Agent分析預測</p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  用戶ID (系統自動填寫)
+            <CardContent>
+              <div style={{marginBottom: '16px'}}>
+                <label style={{display: 'block', color: '#d1d5db', marginBottom: '8px'}}>
+                  用戶ID
                 </label>
                 <Input
                   type="text"
@@ -353,22 +325,18 @@ const BaccaratPredictor = () => {
                   placeholder="請輸入用戶ID"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                  <Lock className="w-4 h-4" />
-                  專屬編碼 (密碼)
+              <div style={{marginBottom: '16px'}}>
+                <label style={{display: 'block', color: '#d1d5db', marginBottom: '8px'}}>
+                  密碼
                 </label>
                 <Input
                   type="password"
                   value={loginForm.password}
                   onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="請輸入專屬編碼"
+                  placeholder="請輸入密碼"
                 />
               </div>
-              <Button
-                onClick={handleLogin}
-                className="w-full bg-purple-600 hover:bg-purple-700"
-              >
+              <Button onClick={handleLogin} style={{width: '100%'}}>
                 登入系統
               </Button>
             </CardContent>
@@ -378,35 +346,20 @@ const BaccaratPredictor = () => {
     );
   }
 
-  // 資金設置界面
   if (!isSetup) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 p-6">
-        <div className="max-w-md mx-auto mt-10">
-          {/* 用戶信息欄 */}
-          <Card className="bg-gray-800/50 border-green-500/30 mb-6">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-                    <User className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold">{currentUser.name}</p>
-                    <p className="text-gray-300 text-sm">ID: {currentUser.id}</p>
-                  </div>
+      <div style={{minHeight: '100vh', background: 'linear-gradient(135deg, #1f2937, #7c3aed, #8b5cf6)', padding: '24px'}}>
+        <div style={{maxWidth: '400px', margin: '40px auto'}}>
+          <Card style={{marginBottom: '24px'}}>
+            <CardContent>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <div>
+                  <p style={{color: 'white', fontWeight: 'bold'}}>{currentUser.name}</p>
+                  <p style={{color: '#d1d5db', fontSize: '14px'}}>ID: {currentUser.id}</p>
                 </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-yellow-400" />
-                    <span className="text-yellow-400 font-bold">{currentUser.points} XP</span>
-                  </div>
-                  <Button
-                    onClick={handleLogout}
-                    variant="outline"
-                    size="sm"
-                    className="mt-2 text-xs border-red-500/30 text-red-400 hover:bg-red-500/10"
-                  >
+                <div style={{textAlign: 'right'}}>
+                  <div style={{color: '#fbbf24', fontWeight: 'bold'}}>{currentUser.points} XP</div>
+                  <Button onClick={handleLogout} style={{marginTop: '8px', fontSize: '12px', background: '#dc2626'}}>
                     登出
                   </Button>
                 </div>
@@ -414,15 +367,13 @@ const BaccaratPredictor = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-purple-500/30">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-white">
-                設置投注資金
-              </CardTitle>
+          <Card>
+            <CardHeader>
+              <CardTitle style={{textAlign: 'center'}}>設置投注資金</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+            <CardContent>
+              <div style={{marginBottom: '16px'}}>
+                <label style={{display: 'block', color: '#d1d5db', marginBottom: '8px'}}>
                   起始資金 (元)
                 </label>
                 <Input
@@ -432,8 +383,8 @@ const BaccaratPredictor = () => {
                   placeholder="請輸入起始資金"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+              <div style={{marginBottom: '16px'}}>
+                <label style={{display: 'block', color: '#d1d5db', marginBottom: '8px'}}>
                   目標資金 (元)
                 </label>
                 <Input
@@ -443,10 +394,7 @@ const BaccaratPredictor = () => {
                   placeholder="請輸入目標資金"
                 />
               </div>
-              <Button
-                onClick={handleSetup}
-                className="w-full bg-purple-600 hover:bg-purple-700"
-              >
+              <Button onClick={handleSetup} style={{width: '100%'}}>
                 開始分析
               </Button>
             </CardContent>
@@ -459,32 +407,20 @@ const BaccaratPredictor = () => {
   const progressPercentage = ((currentAmount - parseFloat(startAmount)) / (parseFloat(targetAmount) - parseFloat(startAmount))) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div style={{minHeight: '100vh', background: 'linear-gradient(135deg, #1f2937, #7c3aed, #8b5cf6)', padding: '16px'}}>
+      <div style={{maxWidth: '1200px', margin: '0 auto'}}>
         
         {/* 用戶狀態欄 */}
-        <Card className="bg-gray-800/50 border-purple-500/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-white font-semibold">{currentUser.name}</p>
-                  <p className="text-gray-300 text-sm">ID: {currentUser.id}</p>
-                </div>
+        <Card style={{marginBottom: '24px'}}>
+          <CardContent>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+              <div>
+                <p style={{color: 'white', fontWeight: 'bold'}}>{currentUser.name}</p>
+                <p style={{color: '#d1d5db'}}>ID: {currentUser.id}</p>
               </div>
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <Star className="w-5 h-5 text-yellow-400" />
-                  <span className="text-yellow-400 font-bold text-lg">{currentUser.points} XP</span>
-                </div>
-                <Button
-                  onClick={handleLogout}
-                  variant="outline"
-                  className="border-red-500/30 text-red-400 hover:bg-red-500/10"
-                >
+              <div style={{display: 'flex', alignItems: 'center', gap: '24px'}}>
+                <span style={{color: '#fbbf24', fontWeight: 'bold', fontSize: '18px'}}>{currentUser.points} XP</span>
+                <Button onClick={handleLogout} style={{background: '#dc2626'}}>
                   登出
                 </Button>
               </div>
@@ -493,82 +429,77 @@ const BaccaratPredictor = () => {
         </Card>
 
         {/* 資金狀態 */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-gray-800/50 border-green-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginBottom: '24px'}}>
+          <Card>
+            <CardContent>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <div>
-                  <p className="text-sm text-gray-400">當前資金</p>
-                  <p className="text-2xl font-bold text-green-400">
+                  <p style={{color: '#9ca3af', fontSize: '14px'}}>當前資金</p>
+                  <p style={{color: '#10b981', fontSize: '24px', fontWeight: 'bold'}}>
                     ${currentAmount.toLocaleString()}
                   </p>
                 </div>
-                <DollarSign className="w-8 h-8 text-green-400" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-blue-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+          <Card>
+            <CardContent>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <div>
-                  <p className="text-sm text-gray-400">目標資金</p>
-                  <p className="text-2xl font-bold text-blue-400">
+                  <p style={{color: '#9ca3af', fontSize: '14px'}}>目標資金</p>
+                  <p style={{color: '#3b82f6', fontSize: '24px', fontWeight: 'bold'}}>
                     ${parseFloat(targetAmount).toLocaleString()}
                   </p>
                 </div>
-                <Target className="w-8 h-8 text-blue-400" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-purple-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+          <Card>
+            <CardContent>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <div>
-                  <p className="text-sm text-gray-400">勝率</p>
-                  <p className="text-2xl font-bold text-purple-400">{winRate}%</p>
+                  <p style={{color: '#9ca3af', fontSize: '14px'}}>勝率</p>
+                  <p style={{color: '#8b5cf6', fontSize: '24px', fontWeight: 'bold'}}>{winRate}%</p>
                 </div>
-                <TrendingUp className="w-8 h-8 text-purple-400" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-yellow-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+          <Card>
+            <CardContent>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <div>
-                  <p className="text-sm text-gray-400">進度</p>
-                  <p className="text-2xl font-bold text-yellow-400">
+                  <p style={{color: '#9ca3af', fontSize: '14px'}}>進度</p>
+                  <p style={{color: '#fbbf24', fontSize: '24px', fontWeight: 'bold'}}>
                     {Math.max(0, Math.min(100, progressPercentage)).toFixed(1)}%
                   </p>
                 </div>
-                <BarChart3 className="w-8 h-8 text-yellow-400" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* 積分消耗提示 */}
-        <Card className="bg-yellow-500/20 border-yellow-500/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-center gap-2 text-yellow-300">
-              <AlertCircle className="w-5 h-5" />
-              <span className="font-semibold">每次預測消耗 5 XP • 剩餘可預測次數: {Math.floor(currentUser.points / 5)} 次</span>
+        {/* 積分提示 */}
+        <Card style={{marginBottom: '24px', backgroundColor: 'rgba(245, 158, 11, 0.2)', borderColor: 'rgba(245, 158, 11, 0.3)'}}>
+          <CardContent>
+            <div style={{textAlign: 'center', color: '#fbbf24'}}>
+              每次預測消耗 5 XP • 剩餘可預測次數: {Math.floor(currentUser.points / 5)} 次
             </div>
           </CardContent>
         </Card>
 
         {/* 輸入區域 */}
-        <Card className="bg-gray-800/50 border-purple-500/30">
+        <Card style={{marginBottom: '24px'}}>
           <CardHeader>
-            <CardTitle className="text-white">牌局輸入</CardTitle>
+            <CardTitle>牌局輸入</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CardContent>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '24px'}}>
               <div>
-                <h3 className="text-lg font-semibold text-purple-300 mb-3">閒家 (Player)</h3>
-                <div className="grid grid-cols-3 gap-2 mb-3">
+                <h3 style={{color: '#a855f7', fontSize: '18px', fontWeight: 'bold', marginBottom: '12px'}}>閒家 (Player)</h3>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px'}}>
                   {currentGame.playerCards.map((card, index) => (
                     <Input
                       key={`player-${index}`}
@@ -581,8 +512,8 @@ const BaccaratPredictor = () => {
                         newCards[index] = e.target.value;
                         setCurrentGame(prev => ({...prev, playerCards: newCards}));
                       }}
-                      className="text-center"
                       placeholder={`牌${index + 1}`}
+                      style={{textAlign: 'center'}}
                     />
                   ))}
                 </div>
@@ -597,8 +528,8 @@ const BaccaratPredictor = () => {
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-orange-300 mb-3">莊家 (Banker)</h3>
-                <div className="grid grid-cols-3 gap-2 mb-3">
+                <h3 style={{color: '#f97316', fontSize: '18px', fontWeight: 'bold', marginBottom: '12px'}}>莊家 (Banker)</h3>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px'}}>
                   {currentGame.bankerCards.map((card, index) => (
                     <Input
                       key={`banker-${index}`}
@@ -611,8 +542,8 @@ const BaccaratPredictor = () => {
                         newCards[index] = e.target.value;
                         setCurrentGame(prev => ({...prev, bankerCards: newCards}));
                       }}
-                      className="text-center"
                       placeholder={`牌${index + 1}`}
+                      style={{textAlign: 'center'}}
                     />
                   ))}
                 </div>
@@ -627,11 +558,11 @@ const BaccaratPredictor = () => {
               </div>
             </div>
 
-            <div className="flex justify-center gap-4">
+            <div style={{display: 'flex', justifyContent: 'center', gap: '16px'}}>
               <Button
                 onClick={analyzePrediction}
                 disabled={currentUser.points < 5}
-                className="bg-purple-600 hover:bg-purple-700 px-8 py-3 text-lg"
+                style={{padding: '12px 32px', fontSize: '16px'}}
               >
                 {currentUser.points < 5 ? '積分不足' : '分析預測 (-5 XP)'}
               </Button>
@@ -647,10 +578,8 @@ const BaccaratPredictor = () => {
                   setGameHistory([]);
                   setWinRate(0);
                   setTotalGames(0);
-                  setTrendData([]);
                 }}
-                className="bg-orange-600 hover:bg-orange-700 px-6 py-3 text-lg"
-                variant="outline"
+                style={{padding: '12px 24px', fontSize: '16px', background: '#f97316'}}
               >
                 重新計算
               </Button>
@@ -660,87 +589,86 @@ const BaccaratPredictor = () => {
 
         {/* 預測結果 */}
         {prediction && (
-          <Card className="bg-gray-800/50 border-green-500/30">
+          <Card style={{marginBottom: '24px', borderColor: '#10b981'}}>
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <AlertCircle className="w-6 h-6 text-green-400" />
-                AI預測結果
-              </CardTitle>
+              <CardTitle style={{color: '#10b981'}}>AI預測結果</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gray-700/50 rounded-lg">
-                  <p className="text-sm text-gray-400">建議投注</p>
-                  <p className={`text-2xl font-bold ${
-                    prediction.recommendation === 'PLAYER' ? 'text-purple-400' :
-                    prediction.recommendation === 'BANKER' ? 'text-orange-400' : 'text-gray-400'
-                  }`}>
+            <CardContent>
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px', marginBottom: '24px'}}>
+                <div style={{textAlign: 'center', padding: '16px', backgroundColor: 'rgba(55, 65, 81, 0.5)', borderRadius: '8px'}}>
+                  <p style={{color: '#9ca3af', fontSize: '14px'}}>建議投注</p>
+                  <p style={{
+                    fontSize: '24px', 
+                    fontWeight: 'bold', 
+                    color: prediction.recommendation === 'PLAYER' ? '#a855f7' : 
+                           prediction.recommendation === 'BANKER' ? '#f97316' : '#9ca3af'
+                  }}>
                     {prediction.recommendation === 'PLAYER' ? '閒家' :
                      prediction.recommendation === 'BANKER' ? '莊家' : '觀望'}
                   </p>
                 </div>
-                <div className="text-center p-4 bg-gray-700/50 rounded-lg">
-                  <p className="text-sm text-gray-400">勝率預測</p>
-                  <p className="text-2xl font-bold text-green-400">{prediction.probability}%</p>
+                <div style={{textAlign: 'center', padding: '16px', backgroundColor: 'rgba(55, 65, 81, 0.5)', borderRadius: '8px'}}>
+                  <p style={{color: '#9ca3af', fontSize: '14px'}}>勝率預測</p>
+                  <p style={{fontSize: '24px', fontWeight: 'bold', color: '#10b981'}}>{prediction.probability}%</p>
                 </div>
-                <div className="text-center p-4 bg-gray-700/50 rounded-lg">
-                  <p className="text-sm text-gray-400">建議金額</p>
-                  <p className="text-2xl font-bold text-yellow-400">
+                <div style={{textAlign: 'center', padding: '16px', backgroundColor: 'rgba(55, 65, 81, 0.5)', borderRadius: '8px'}}>
+                  <p style={{color: '#9ca3af', fontSize: '14px'}}>建議金額</p>
+                  <p style={{fontSize: '24px', fontWeight: 'bold', color: '#fbbf24'}}>
                     ${prediction.betAmount.toLocaleString()}
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="text-center">
-                  <p className="text-gray-400">閒家EA</p>
-                  <p className="text-purple-400 font-bold">{prediction.playerEA}</p>
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px'}}>
+                <div style={{textAlign: 'center'}}>
+                  <p style={{color: '#9ca3af'}}>閒家EA</p>
+                  <p style={{color: '#a855f7', fontWeight: 'bold'}}>{prediction.playerEA}</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-gray-400">莊家EA</p>
-                  <p className="text-orange-400 font-bold">{prediction.bankerEA}</p>
+                <div style={{textAlign: 'center'}}>
+                  <p style={{color: '#9ca3af'}}>莊家EA</p>
+                  <p style={{color: '#f97316', fontWeight: 'bold'}}>{prediction.bankerEA}</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-gray-400">閒家VP</p>
-                  <p className="text-purple-400 font-bold">{prediction.playerVP}</p>
+                <div style={{textAlign: 'center'}}>
+                  <p style={{color: '#9ca3af'}}>閒家VP</p>
+                  <p style={{color: '#a855f7', fontWeight: 'bold'}}>{prediction.playerVP}</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-gray-400">莊家VP</p>
-                  <p className="text-orange-400 font-bold">{prediction.bankerVP}</p>
+                <div style={{textAlign: 'center'}}>
+                  <p style={{color: '#9ca3af'}}>莊家VP</p>
+                  <p style={{color: '#f97316', fontWeight: 'bold'}}>{prediction.bankerVP}</p>
                 </div>
               </div>
 
-              <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3">
-                <p className="text-blue-300 text-sm">
-                  <span className="font-semibold">分析依據: </span>
+              <div style={{backgroundColor: 'rgba(59, 130, 246, 0.2)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px', padding: '12px', marginBottom: '16px'}}>
+                <p style={{color: '#93c5fd', fontSize: '14px'}}>
+                  <span style={{fontWeight: 'bold'}}>分析依據: </span>
                   {prediction.analysisReason}
                 </p>
               </div>
 
               {prediction.isNatural && (
-                <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-3">
-                  <p className="text-yellow-300 text-center font-semibold">
+                <div style={{backgroundColor: 'rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', padding: '12px', marginBottom: '16px'}}>
+                  <p style={{color: '#fbbf24', textAlign: 'center', fontWeight: 'bold'}}>
                     ⚡ 天生贏家局面 - 提高預測準確度
                   </p>
                 </div>
               )}
 
-              <div className="flex justify-center gap-4">
+              <div style={{display: 'flex', justifyContent: 'center', gap: '16px'}}>
                 <Button
                   onClick={() => confirmResult('PLAYER')}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  style={{background: '#a855f7'}}
                 >
                   閒家贏
                 </Button>
                 <Button
                   onClick={() => confirmResult('BANKER')}
-                  className="bg-orange-600 hover:bg-orange-700"
+                  style={{background: '#f97316'}}
                 >
                   莊家贏
                 </Button>
                 <Button
                   onClick={() => confirmResult('TIE')}
-                  className="bg-gray-600 hover:bg-gray-700"
+                  style={{background: '#6b7280'}}
                 >
                   和局
                 </Button>
@@ -751,36 +679,46 @@ const BaccaratPredictor = () => {
 
         {/* 歷史記錄 */}
         {gameHistory.length > 0 && (
-          <Card className="bg-gray-800/50 border-blue-500/30">
+          <Card style={{marginBottom: '24px'}}>
             <CardHeader>
-              <CardTitle className="text-white">遊戲記錄</CardTitle>
+              <CardTitle>遊戲記錄</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 max-h-60 overflow-y-auto">
+              <div style={{maxHeight: '240px', overflowY: 'auto'}}>
                 {gameHistory.slice(-10).map((game, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <span className="text-gray-400 text-sm">{game.timestamp}</span>
-                      <span className={`font-semibold ${
-                        game.prediction.recommendation === 'PLAYER' ? 'text-purple-400' :
-                        game.prediction.recommendation === 'BANKER' ? 'text-orange-400' : 'text-gray-400'
-                      }`}>
+                  <div key={index} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', backgroundColor: 'rgba(55, 65, 81, 0.5)', borderRadius: '8px', marginBottom: '8px'}}>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                      <span style={{color: '#9ca3af', fontSize: '14px'}}>{game.timestamp}</span>
+                      <span style={{
+                        fontWeight: 'bold',
+                        color: game.prediction.recommendation === 'PLAYER' ? '#a855f7' :
+                               game.prediction.recommendation === 'BANKER' ? '#f97316' : '#9ca3af'
+                      }}>
                         預測: {game.prediction.recommendation === 'PLAYER' ? '閒家' :
                                game.prediction.recommendation === 'BANKER' ? '莊家' : '觀望'}
                       </span>
-                      <span className="text-white">
+                      <span style={{color: 'white'}}>
                         結果: {game.result === 'PLAYER' ? '閒家' :
                                game.result === 'BANKER' ? '莊家' : '和局'}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <span className={`font-bold ${game.profit > 0 ? 'text-green-400' : game.profit < 0 ? 'text-red-400' : 'text-gray-400'}`}>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                      <span style={{
+                        fontWeight: 'bold',
+                        color: game.profit > 0 ? '#10b981' : game.profit < 0 ? '#ef4444' : '#9ca3af'
+                      }}>
                         {game.profit > 0 ? '+' : ''}${game.profit.toLocaleString()}
                       </span>
-                      <span className={`px-2 py-1 rounded text-sm ${game.isCorrect ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                      <span style={{
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        backgroundColor: game.isCorrect ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                        color: game.isCorrect ? '#10b981' : '#ef4444'
+                      }}>
                         {game.isCorrect ? '✓' : '✗'}
                       </span>
-                      <span className="text-yellow-400 text-sm">-5 XP</span>
+                      <span style={{color: '#fbbf24', fontSize: '14px'}}>-5 XP</span>
                     </div>
                   </div>
                 ))}
@@ -790,16 +728,16 @@ const BaccaratPredictor = () => {
         )}
 
         {/* 控制按鈕 */}
-        <div className="flex justify-center gap-4">
+        <div style={{display: 'flex', justifyContent: 'center', gap: '16px'}}>
           <Button
             onClick={() => setIsSetup(false)}
-            className="bg-blue-600 hover:bg-blue-700 px-8 py-3"
+            style={{padding: '12px 32px', background: '#3b82f6'}}
           >
             重設資金
           </Button>
           <Button
             onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 px-8 py-3"
+            style={{padding: '12px 32px', background: '#dc2626'}}
           >
             登出系統
           </Button>
@@ -807,6 +745,6 @@ const BaccaratPredictor = () => {
       </div>
     </div>
   );
-};
+}
 
 export default BaccaratPredictor;
